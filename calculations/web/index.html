@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Excel 权重评价工具</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-label="应用状态">
+        <div>
+          <h1>Excel 权重评价工具</h1>
+          <p id="fileStatus">拖入 Excel 后开始配置指标和权重</p>
+        </div>
+        <div class="actions">
+          <button id="calculateBtn" class="primary" type="button" disabled>
+            <i data-lucide="calculator"></i>
+            计算
+          </button>
+          <button id="exportExcelBtn" type="button" disabled>
+            <i data-lucide="file-spreadsheet"></i>
+            导出 Excel
+          </button>
+          <button id="exportImageBtn" type="button" disabled>
+            <i data-lucide="image-down"></i>
+            导出图片
+          </button>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="sidebar" aria-label="导入和全局设置">
+          <label id="dropZone" class="drop-zone" for="fileInput">
+            <input id="fileInput" type="file" accept=".xlsx,.xls" />
+            <i data-lucide="file-spreadsheet"></i>
+            <strong>拖入或选择 Excel</strong>
+            <span>.xlsx / .xls</span>
+          </label>
+
+          <div class="field-group">
+            <label for="sheetSelect">工作表</label>
+            <select id="sheetSelect" disabled></select>
+          </div>
+
+          <div class="field-group">
+            <label for="sampleColumnSelect">样品编号列</label>
+            <select id="sampleColumnSelect" disabled></select>
+          </div>
+
+          <div class="settings-grid">
+            <div class="field-group">
+              <label for="objectiveMethod">客观赋权</label>
+              <select id="objectiveMethod">
+                <option value="critic">CRITIC 法</option>
+                <option value="entropy">熵权法</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="combineMethod">组合方式</label>
+              <select id="combineMethod">
+                <option value="power">指数加权乘法集成法</option>
+                <option value="product">乘法集成法</option>
+                <option value="additive">加权加法集成法</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <div class="field-group">
+              <label for="alphaInput">主观权重占比</label>
+              <input id="alphaInput" type="number" min="0" max="100" step="1" value="50" />
+            </div>
+            <div class="field-group">
+              <label for="methodHint">当前方法</label>
+              <input id="methodHint" type="text" value="CRITIC + 指数加权乘法" readonly />
+            </div>
+          </div>
+
+          <div class="status-panel">
+            <div>
+              <span>权重合计</span>
+              <strong id="weightTotal">100%</strong>
+            </div>
+            <div>
+              <span>数据行数</span>
+              <strong id="rowCount">0</strong>
+            </div>
+          </div>
+        </aside>
+
+        <section class="main-panel" aria-label="指标配置和结果">
+          <div class="section-head">
+            <div>
+              <h2>指标与权重</h2>
+            </div>
+            <button id="addIndicatorBtn" type="button">
+              <i data-lucide="plus"></i>
+              添加指标
+            </button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="config-table">
+              <thead>
+                <tr>
+                  <th>指标名称</th>
+                  <th>Excel 列名</th>
+                  <th>方向</th>
+                  <th>权重 %</th>
+                  <th aria-label="删除"></th>
+                </tr>
+              </thead>
+              <tbody id="indicatorBody"></tbody>
+            </table>
+          </div>
+
+          <div id="messageBox" class="message" role="status"></div>
+
+          <section class="chart-panel" aria-label="权重图">
+            <div class="section-head compact">
+              <h2>权重变化图</h2>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="weightChart" width="1400" height="840"></canvas>
+            </div>
+          </section>
+
+          <div class="results-grid">
+            <section class="result-block">
+              <div class="section-head compact">
+                <h2>最终权重</h2>
+              </div>
+              <div id="weightsPreview" class="preview-empty">暂无计算结果</div>
+            </section>
+
+            <section class="result-block wide">
+              <div class="section-head compact">
+                <h2>TOPSIS 结果预览</h2>
+              </div>
+              <div id="resultPreview" class="preview-empty">暂无计算结果</div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
